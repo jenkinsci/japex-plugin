@@ -1,0 +1,28 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <l:layout>
+    <st:include it="${it.project}" page="sidepanel.jelly" />
+    <l:main-panel>
+      <h1>Japex Report</h1>
+
+      <j:choose>
+        <j:when test="${it.hasReports()}">
+          <p>
+            This project contains multiple reports
+          </p>
+          <table>
+            <j:forEach var="rpt" items="${it.reports}">
+              <t:summary icon="graph.gif" href="${rpt.displayName}/">
+                ${rpt.displayName}
+              </t:summary>
+            </j:forEach>
+          </table>
+        </j:when>
+        <j:otherwise>
+          <p>
+            This project has no report yet.
+          </p>
+        </j:otherwise>
+      </j:choose>
+    </l:main-panel>
+  </l:layout>
+</j:jelly>

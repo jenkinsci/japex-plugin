@@ -1,0 +1,21 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.jvnet.hudson.plugins</groupId>
+    <artifactId>plugin</artifactId>
+    <version>1.0</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  
+  <artifactId>japex</artifactId>
+  <packaging>hpi</packaging>
+  <name>Hudson JAPEX plugin</name>
+  
+  <dependencies>
+    <dependency>
+      <groupId>com.sun.japex</groupId>
+      <artifactId>japex</artifactId>
+      <version>1.0.26</version>
+    </dependency>
+  </dependencies>
+</project>

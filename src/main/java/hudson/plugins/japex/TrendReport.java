@@ -62,7 +62,7 @@ public class TrendReport implements ModelObject {
 //
 
     /**
-     * Gets to the object that represents individual test caase result.
+     * Gets to the object that represents individual test case result.
      */
     public TestCaseGraph getTestCaseGraph(String safeName) {
         return new TestCaseGraph(this,testCaseNames.get(safeName));

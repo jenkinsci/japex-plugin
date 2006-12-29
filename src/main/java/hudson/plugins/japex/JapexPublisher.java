@@ -4,6 +4,7 @@ import com.sun.japex.RegressionDetector;
 import com.sun.japex.report.TestSuiteReport;
 import hudson.Launcher;
 import hudson.Util;
+import hudson.FilePath;
 import hudson.model.Action;
 import hudson.model.Build;
 import hudson.model.BuildListener;
@@ -78,26 +79,26 @@ public class JapexPublisher extends Publisher {
         this.regressionAddress = Util.fixEmpty(Util.fixNull(regressionAddress).trim());
     }
 
-    public boolean perform(Build build, Launcher launcher, BuildListener listener) {
+    public boolean perform(Build build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
         listener.getLogger().println("Recording japex reports "+includes);
 
         org.apache.tools.ant.Project antProject = new org.apache.tools.ant.Project();
 
-        FileSet fs = new FileSet();
-        fs.setDir(build.getProject().getWorkspace().getLocal());
-        fs.setIncludes(includes);
+        File outDir = getJapexReport(build);
+        outDir.mkdir();
 
-        DirectoryScanner ds = fs.getDirectoryScanner(antProject);
-        String[] includedFiles = ds.getIncludedFiles();
-
-        if(includedFiles.length==0) {
+        int numFiles = build.getProject().getWorkspace().copyRecursiveTo(includes, new FilePath(outDir));
+        if(numFiles==0) {
             listener.error("No matching file found. Configuration error?");
             build.setResult(Result.FAILURE);
             return true;
         }
 
-        File outDir = getJapexReport(build);
-        outDir.mkdir();
+        // work with files copied to the local dir
+        FileSet fs = new FileSet();
+        fs.setDir(outDir);
+        DirectoryScanner ds = fs.getDirectoryScanner(antProject);
+        String[] includedFiles = ds.getIncludedFiles();
 
         File prevDir = getPreviousJapexReport(build);
         boolean hasRegressionReport = false;

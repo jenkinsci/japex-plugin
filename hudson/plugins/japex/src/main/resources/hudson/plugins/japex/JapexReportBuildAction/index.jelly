@@ -1,0 +1,51 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <l:layout title="${it.owner.name} Japex regression report">
+    <st:include it="${it.owner}" page="sidepanel.jelly" />
+    <l:main-panel xmlns:x="jelly:xml" xmlns:reg="http://www.sun.com/japex/regressionReport">
+      <h1>Japex Regression Report</h1>
+
+      <d:taglib uri="local">
+        <!-- display a percentage with the right color -->
+        <d:tag name="colorText">
+          <j:choose>
+            <j:when test="${value lt 0}">
+              <font color="red">${value}%</font>
+            </j:when>
+            <j:otherwise>
+              ${value}%
+            </j:otherwise>
+          </j:choose>
+        </d:tag>
+      </d:taglib>
+
+      <table class="sortable" style="text-align:center; ">
+        <tr>
+          <th>Driver</th>
+          <th>Arithmetic Mean</th>
+          <th>Geometric Mean</th>
+          <th>Harmonic Mean</th>
+        </tr>
+        <j:forEach var="report" items="${it.regressionReports}" xmlns:x="jelly:xml" xmlns:reg="http://www.sun.com/japex/regressionReport">
+          <x:parse var="dom" xml="${report}"/>
+          <x:forEach var="driver" select="$dom/*/reg:driver" xmlns:lo="local">
+            <tr>
+              <td><x:expr select="@name"/></td>
+              <td>
+                <x:set var="value" select="number(reg:resultAritMeanDiffAsPercentage)"/>
+                <lo:colorText />
+              </td>
+              <td>
+                <x:set var="value" select="number(reg:resultGeomMeanDiffAsPercentage)"/>
+                <lo:colorText />
+              </td>
+              <td>
+                <x:set var="value" select="number(reg:resultHarmMeanDiffAsPercentage)"/>
+                <lo:colorText />
+              </td>
+            </tr>
+          </x:forEach>
+        </j:forEach>
+      </table>
+    </l:main-panel>
+  </l:layout>
+</j:jelly>

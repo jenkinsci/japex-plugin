@@ -1,0 +1,51 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:c="chart">
+
+  <j:set var="width" value="750" />
+
+  <d:taglib uri="chart">
+    <d:tag name="chart">
+      <div id="${id}" style="margin-top: 2em">
+        <div align="right" style="width:${width}px">
+          <a href="#top"><img src="${rootURL}/images/24x24/up.gif"/>top</a>
+        </div>
+        <img src="${href}?width=${width}&amp;height=450" width="${width}" height="450" />
+      </div>
+    </d:tag>
+    <d:tag name="meanChart">
+      <c:chart id="${mode}" href="${mode}MeanGraph" />
+    </d:tag>
+    <d:tag name="individualChart">
+      <c:chart id="${name}" href="testCaseGraph/${name}/" />
+    </d:tag>
+  </d:taglib>
+  <l:layout>
+    <st:include it="${it.project}" page="sidepanel.jelly" />
+    <l:main-panel>
+      <h1><img src="${rootURL}/images/32x32/graph.gif"/>Japex Report</h1>
+
+      <div>
+        <script>
+          function jump(menu){
+            window.location.hash = menu.value;
+          }
+        </script>
+        Jump to <select name="choice" onChange="jump(this)">
+          <option value="#arithmetic">Arithmetic Means</option>
+          <option value="#geometric">Geometric Means</option>
+          <option value="#harmonic">Harmonic Means</option>
+          <j:forEach var="test" items="${it.testCaseNames}">
+            <option value="#${test.key}">${test.value}</option>
+          </j:forEach>
+        </select>
+      </div>
+
+      <c:meanChart mode="arithmetic" />
+      <c:meanChart mode="geometric" />
+      <c:meanChart mode="harmonic" />
+
+      <j:forEach var="test" items="${it.testCaseNames}">
+        <c:individualChart name="${test.key}" />
+      </j:forEach>
+    </l:main-panel>
+  </l:layout>
+</j:jelly>

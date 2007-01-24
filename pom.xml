@@ -10,7 +10,7 @@
   <artifactId>japex</artifactId>
   <packaging>hpi</packaging>
   <name>Hudson JAPEX plugin</name>
-  <version>1.4</version>
+  <version>1.5-SNAPSHOT</version>
   
   <dependencies>
     <dependency>
@@ -19,8 +19,4 @@
       <version>1.0.26</version>
     </dependency>
   </dependencies>
-
-  <scm>
-    <tag>japex-1_4</tag>
-  </scm>
 </project>

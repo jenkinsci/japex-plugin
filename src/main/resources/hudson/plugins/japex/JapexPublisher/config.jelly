@@ -18,7 +18,7 @@
     <f:checkbox type="checkbox" name="japex.trackRegressions" checked="${instance.trackRegressions}"/>
     Send notification e-mail to
     <input class="validated" type="text" name="japex.regressionAddress" style="width:20em" value="${instance.regressionAddress}"
-        checkUrl="'${rootURL}/publisher/JapexPublisher/checkAddress?value='+this.value"/>
+        checkUrl="'${rootURL}/publisher/JapexPublisher/checkAddress?value='+escape(this.value)"/>
     if there's more than
     <input class="number" type="text" name="japex.regressionThreshold" style="width:3em; text-align:right" value="${instance.regressionThreshold}"/>% jump in the performance.
   </f:entry>

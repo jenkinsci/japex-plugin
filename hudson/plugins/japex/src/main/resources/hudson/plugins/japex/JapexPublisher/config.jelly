@@ -1,0 +1,25 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <f:entry title="Japex report files"
+           description="
+           Specify the path to the Japex report.xml files, relative to
+           &lt;a href='ws/'>the workspace root&lt;/a>.
+
+           This can use wildcards like 'build/report/*/report.xml'.
+           See &lt;a href='http://ant.apache.org/manual/CoreTypes/fileset.html'>
+           the @includes of Ant fileset&lt;/a> for the exact format.
+
+           Only those files that match this pattern and files that are newer than
+           the build timestamp is archived.
+           ">
+    <input class="setting-input" name="japex.includes"
+      type="text" value="${instance.includes}"/>
+  </f:entry>
+  <f:entry help="${rootURL}/plugin/japex/help-regressionTracker.html">
+    <f:checkbox type="checkbox" name="japex.trackRegressions" checked="${instance.trackRegressions}"/>
+    Send notification e-mail to
+    <input class="validated" type="text" name="japex.regressionAddress" style="width:20em" value="${instance.regressionAddress}"
+        checkUrl="'${rootURL}/publisher/JapexPublisher/checkAddress?value='+escape(this.value)"/>
+    if there's more than
+    <input class="number" type="text" name="japex.regressionThreshold" style="width:3em; text-align:right" value="${instance.regressionThreshold}"/>% jump in the performance.
+  </f:entry>
+</j:jelly>

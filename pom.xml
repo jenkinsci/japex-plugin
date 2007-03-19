@@ -16,7 +16,7 @@
     <dependency>
       <groupId>com.sun.japex</groupId>
       <artifactId>japex</artifactId>
-      <version>1.0.26</version>
+      <version>1.0.25</version>
     </dependency>
   </dependencies>
 </project>

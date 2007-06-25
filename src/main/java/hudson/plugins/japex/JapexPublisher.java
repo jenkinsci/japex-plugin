@@ -181,7 +181,7 @@ public class JapexPublisher extends Publisher {
     /**
      * Computes the archive of the last Japex run.
      */
-    private File getPreviousJapexReport(Build build) {
+    private File getPreviousJapexReport(Build<?,?> build) {
         build = build.getPreviousNotFailedBuild();
         if(build==null)     return null;
         else    return getJapexReport(build);

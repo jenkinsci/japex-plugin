@@ -28,7 +28,7 @@ import java.util.Map.Entry;
  * @author Kohsuke Kawaguchi
  */
 public class JapexReportAction implements Action, StaplerProxy {
-    private final Project project;
+    private final Project<?,?> project;
 
     public JapexReportAction(Project project) {
         this.project = project;

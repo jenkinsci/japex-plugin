@@ -168,7 +168,7 @@ public class JapexPublisher extends Publisher {
             msg.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(getRegressionAddress(), false));
             msg.setFrom(new InternetAddress(Mailer.DESCRIPTOR.getAdminAddress()));
-            msg.setSubject("Japex performance regression in "+build.getProject().getName()+' '+build.getDisplayName());
+            msg.setSubject("Japex performance regression in "+build.getProject().getFullDisplayName()+' '+build.getDisplayName());
             msg.setText(payload);
             msg.setHeader("Content-Type", "text/html");
 

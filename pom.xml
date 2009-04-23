@@ -11,7 +11,7 @@
   <packaging>hpi</packaging>
   <name>Hudson JAPEX plugin</name>
   <version>1.6-SNAPSHOT</version>
-  <url>http://hudson.gotdns.com/wiki/display/HUDSON/Japex+Plugin</url>
+  <url>http://wiki.hudson-ci.org/display/HUDSON/Japex+Plugin</url>
   
   <dependencies>
     <dependency>

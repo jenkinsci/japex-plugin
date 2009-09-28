@@ -2,22 +2,26 @@ package hudson.plugins.japex;
 
 import com.sun.japex.RegressionDetector;
 import com.sun.japex.report.TestSuiteReport;
+import hudson.Extension;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.FilePath;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.Build;
 import hudson.model.BuildListener;
-import hudson.model.Descriptor;
 import hudson.model.Project;
 import hudson.model.Result;
+import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Mailer;
 import hudson.tasks.Publisher;
-import hudson.util.FormFieldValidator;
+import hudson.tasks.Recorder;
+import hudson.util.FormValidation;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.FileSet;
 import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -25,19 +29,20 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.ServletException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * Records the japex test report for builds.
  *
  * @author Kohsuke Kawaguchi
  */
-public class JapexPublisher extends Publisher {
+public class JapexPublisher extends Recorder {
     /**
      * Relative path to the Japex XML report files.
      */
@@ -79,7 +84,9 @@ public class JapexPublisher extends Publisher {
         this.regressionAddress = Util.fixEmpty(Util.fixNull(regressionAddress).trim());
     }
 
-    public boolean perform(Build build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+    @Override
+    public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+        if (!(build instanceof Build)) return true;
         listener.getLogger().println("Recording japex reports "+includes);
 
         org.apache.tools.ant.Project antProject = new org.apache.tools.ant.Project();
@@ -87,7 +94,7 @@ public class JapexPublisher extends Publisher {
         File outDir = getJapexReport(build);
         outDir.mkdir();
 
-        int numFiles = build.getProject().getWorkspace().copyRecursiveTo(includes, new FilePath(outDir));
+        int numFiles = build.getWorkspace().copyRecursiveTo(includes, new FilePath(outDir));
         if(numFiles==0) {
             listener.error("No matching file found. Configuration error?");
             build.setResult(Result.FAILURE);
@@ -157,17 +164,17 @@ public class JapexPublisher extends Publisher {
         }
 
         if(hasRegressionReport)
-            build.getActions().add(new JapexReportBuildAction(build));
+            build.getActions().add(new JapexReportBuildAction((Build)build)); // Type checked above
 
         return true;
     }
 
-    private void sendNotification(Build build, BuildListener listener, String payload) {
+    private void sendNotification(AbstractBuild<?,?> build, BuildListener listener, String payload) {
         try {
-            Message msg = new MimeMessage(Mailer.DESCRIPTOR.createSession());
+            Message msg = new MimeMessage(Mailer.descriptor().createSession());
             msg.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(getRegressionAddress(), false));
-            msg.setFrom(new InternetAddress(Mailer.DESCRIPTOR.getAdminAddress()));
+            msg.setFrom(new InternetAddress(Mailer.descriptor().getAdminAddress()));
             msg.setSubject("Japex performance regression in "+build.getProject().getFullDisplayName()+' '+build.getDisplayName());
             msg.setText(payload);
             msg.setHeader("Content-Type", "text/html");
@@ -181,7 +188,7 @@ public class JapexPublisher extends Publisher {
     /**
      * Computes the archive of the last Japex run.
      */
-    private File getPreviousJapexReport(Build<?,?> build) {
+    private File getPreviousJapexReport(AbstractBuild<?,?> build) {
         build = build.getPreviousNotFailedBuild();
         if(build==null)     return null;
         else    return getJapexReport(build);
@@ -190,21 +197,28 @@ public class JapexPublisher extends Publisher {
     /**
      * Gets the directory to store report files
      */
-    static File getJapexReport(Build build) {
+    static File getJapexReport(AbstractBuild<?,?> build) {
         return new File(build.getRootDir(),"japex");
     }
 
-    public Action getProjectAction(Project project) {
-        return new JapexReportAction(project);
+    @Override
+    public Action getProjectAction(AbstractProject<?,?> project) {
+        return project instanceof Project ? new JapexReportAction((Project)project) : null;
     }
 
-    public Descriptor<Publisher> getDescriptor() {
+    public BuildStepMonitor getRequiredMonitorService() {
+        return BuildStepMonitor.BUILD;
+    }
+
+    @Override
+    public BuildStepDescriptor<Publisher> getDescriptor() {
         return DESCRIPTOR;
     }
 
-    public static final Descriptor<Publisher> DESCRIPTOR = new DescriptorImpl();
+    @Extension
+    public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
-    public static class DescriptorImpl extends Descriptor<Publisher> {
+    public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
         public DescriptorImpl() {
             super(JapexPublisher.class);
         }
@@ -213,11 +227,13 @@ public class JapexPublisher extends Publisher {
             return "Record Japex test report";
         }
 
+        @Override
         public String getHelpFile() {
             return "/plugin/japex/help.html";
         }
 
-        public Publisher newInstance(StaplerRequest req) throws FormException {
+        @Override
+        public Publisher newInstance(StaplerRequest req, JSONObject formData) throws FormException {
             JapexPublisher pub = new JapexPublisher();
             req.bindParameters(pub,"japex.");
             if(pub.isTrackRegressions()) {
@@ -233,6 +249,11 @@ public class JapexPublisher extends Publisher {
             return pub;
         }
 
+        @Override
+        public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+            return jobType.isAssignableFrom(Project.class);
+        }
+
         //
         // web methods
         //
@@ -240,17 +261,13 @@ public class JapexPublisher extends Publisher {
         /**
          * Checks if the e-mail address is valid
          */
-        public void doCheckAddress( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
-            new FormFieldValidator(req,rsp,false) {
-                public void check() throws IOException, ServletException {
-                    try {
-                        InternetAddress.parse(request.getParameter("value"),true);
-                        ok();
-                    } catch (AddressException e) {
-                        error("Not a valid e-mail address(es)");
-                    }
-                }
-            }.process();
+        public FormValidation doCheckAddress(@QueryParameter final String value) {
+            try {
+                InternetAddress.parse(value,true);
+                return FormValidation.ok();
+            } catch (AddressException e) {
+                return FormValidation.error("Not a valid e-mail address(es)");
+            }
         }
     }
 }

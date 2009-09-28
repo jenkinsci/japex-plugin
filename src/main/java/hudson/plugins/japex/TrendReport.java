@@ -81,7 +81,7 @@ public class TrendReport implements ModelObject {
     }
 
     private void doMeanGraph(StaplerRequest req, StaplerResponse rsp, MeanMode mean) throws IOException {
-        if(ChartUtil.awtProblem) {
+        if(ChartUtil.awtProblemCause != null) {
             // not available. send out error message
             rsp.sendRedirect2(req.getContextPath()+"/images/headless.png");
             return;

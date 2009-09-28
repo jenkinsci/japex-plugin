@@ -52,7 +52,7 @@ public class JapexReportBuildAction implements Action {
 
         List<URL> urls = new ArrayList<URL>();
         for (File f : reports) {
-            urls.add(f.toURL());
+            urls.add(f.toURI().toURL());
         }
         
         return urls;

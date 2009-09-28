@@ -24,7 +24,7 @@ public class TestCaseGraph {
     }
 
     public void doIndex(StaplerRequest req, StaplerResponse rsp) throws IOException {
-        if(ChartUtil.awtProblem) {
+        if(ChartUtil.awtProblemCause != null) {
             // not available. send out error message
             rsp.sendRedirect2(req.getContextPath()+"/images/headless.png");
             return;

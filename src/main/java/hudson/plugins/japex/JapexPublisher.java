@@ -251,7 +251,7 @@ public class JapexPublisher extends Recorder {
 
         @Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return jobType.isAssignableFrom(Project.class);
+            return Project.class.isAssignableFrom(jobType);
         }
 
         //

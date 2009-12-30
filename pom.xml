@@ -17,7 +17,7 @@
       <id>kohsuke</id>
       <name>Kohsuke Kawaguchi</name>
     </developer>
-  <developers>
+  </developers>
 
   <dependencies>
     <dependency>

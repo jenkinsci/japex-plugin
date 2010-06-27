@@ -5,7 +5,7 @@
            &lt;a href='ws/'>the workspace root&lt;/a>.
 
            This can use wildcards like 'build/report/*/report.xml'.
-           See &lt;a href='http://ant.apache.org/manual/CoreTypes/fileset.html'>
+           See &lt;a href='http://ant.apache.org/manual/Types/fileset.html'>
            the @includes of Ant fileset&lt;/a> for the exact format.
 
            Only those files that match this pattern and files that are newer than
@@ -14,7 +14,7 @@
     <input class="setting-input" name="japex.includes"
       type="text" value="${instance.includes}"/>
   </f:entry>
-  <f:entry help="${rootURL}/plugin/japex/help-regressionTracker.html">
+  <f:entry help="/plugin/japex/help-regressionTracker.html">
     <f:checkbox type="checkbox" name="japex.trackRegressions" checked="${instance.trackRegressions}"/>
     Send notification e-mail to
     <input class="validated" type="text" name="japex.regressionAddress" style="width:20em" value="${instance.regressionAddress}"

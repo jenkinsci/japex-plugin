@@ -10,7 +10,7 @@
   <artifactId>japex</artifactId>
   <packaging>hpi</packaging>
   <name>Jenkins JAPEX plugin</name>
-  <version>1.7</version>
+  <version>1.8-SNAPSHOT</version>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Japex+Plugin</url>
   <developers>
     <developer>
@@ -26,10 +26,4 @@
       <version>1.0.30</version>
     </dependency>
   </dependencies>
-
-  <scm>
-    <connection>scm:svn:https://svn.jenkins-ci.org/tags/japex-1.7</connection>
-    <developerConnection>scm:svn:https://svn.jenkins-ci.org/tags/japex-1.7</developerConnection>
-    <url>http://fisheye.jenkins-ci.org/browse/Hudson/tags/japex-1.7</url>
-  </scm>
 </project>

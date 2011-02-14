@@ -3,15 +3,15 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.319</version>
+    <version>1.377</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>japex</artifactId>
   <packaging>hpi</packaging>
-  <name>Hudson JAPEX plugin</name>
+  <name>Jenkins JAPEX plugin</name>
   <version>1.7-SNAPSHOT</version>
-  <url>http://wiki.hudson-ci.org/display/HUDSON/Japex+Plugin</url>
+  <url>http://wiki.jenkins-ci.org/display/JENKINS/Japex+Plugin</url>
   <developers>
     <developer>
       <id>kohsuke</id>
